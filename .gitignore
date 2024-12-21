@@ -1,3 +1,13 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+/*
+
+!.gitattributes
+!.gitignore
+!LICENSE.txt
+!README.md
+
+!addons/
+!.github/
