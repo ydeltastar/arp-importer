@@ -22,12 +22,12 @@ func _pre_process(scene: Node) -> void:
 	if not is_arp:
 		return
 
-	modify_skeleton(scene)
-	modify_animation(scene)
+	_modify_skeleton(scene)
+	_modify_animation(scene)
 
 
-func modify_skeleton(scene:Node):
-	var skeleton = find_skeleton(scene)
+func _modify_skeleton(scene:Node):
+	var skeleton = _find_skeleton(scene)
 
 	# Can't set a new bone as parent of previous bones
 	# Need to rebuild whole skeleton so root is the first bone
@@ -74,9 +74,9 @@ func modify_skeleton(scene:Node):
 		skeleton.force_update_bone_child_transform(idx)
 
 
-func modify_animation(scene:Node):
+func _modify_animation(scene:Node):
 	# Find the skeleton
-	var skeleton = find_skeleton(scene)
+	var skeleton = _find_skeleton(scene)
 	var animation_player:AnimationPlayer = scene.find_child("AnimationPlayer")
 
 	var skeleton_path = scene.get_path_to(skeleton, false)
@@ -87,15 +87,15 @@ func modify_animation(scene:Node):
 			var animation:Animation = animation_player.get_animation(animation_name)
 			var path = "root"
 			var new_path = "%s:Root" % skeleton_path
-			change_name(animation, path, new_path, Animation.TYPE_POSITION_3D)
-			change_name(animation, path, new_path, Animation.TYPE_ROTATION_3D)
-			change_name(animation, path, new_path, Animation.TYPE_SCALE_3D)
+			_change_name(animation, path, new_path, Animation.TYPE_POSITION_3D)
+			_change_name(animation, path, new_path, Animation.TYPE_ROTATION_3D)
+			_change_name(animation, path, new_path, Animation.TYPE_SCALE_3D)
 
 	var root:Node3D = scene.find_child("root") as Node3D
 	root.transform = Transform3D()
 
 
-func change_name(animation:Animation, path, new_path, type:Animation.TrackType):
+func _change_name(animation:Animation, path, new_path, type:Animation.TrackType):
 	var root_track = animation.find_track(path, type)
 	if root_track == -1:
 		return
@@ -108,7 +108,7 @@ func change_name(animation:Animation, path, new_path, type:Animation.TrackType):
 	animation.track_move_to(root_track, 0)
 
 
-func find_skeleton(scene:Node) -> Skeleton3D:
+func _find_skeleton(scene:Node) -> Skeleton3D:
 	var skeleton:Skeleton3D
 	for child in scene.get_child(0).get_children():
 		if child is Skeleton3D:
@@ -128,6 +128,7 @@ func _get_type_name(type:Animation.TrackType):
 			return "TYPE_SCALE_3D"
 
 
+#region Debug
 func analysis(scene:Node):
 	print_children(scene)
 
@@ -137,7 +138,7 @@ func analysis(scene:Node):
 		for i in animation.get_track_count():
 			print(animation.track_get_path(i))
 
-	var skeleton = find_skeleton(scene)
+	var skeleton = _find_skeleton(scene)
 	print(skeleton.name)
 	print(skeleton.unique_name_in_owner)
 
@@ -146,3 +147,4 @@ func print_children(node):
 	print(node)
 	for child in node.get_children():
 		print_children(child)
+#endregion
